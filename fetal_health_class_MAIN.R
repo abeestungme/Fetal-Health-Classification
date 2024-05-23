@@ -406,3 +406,53 @@ for (i in 1:length(networks)) {
 cat("Sieci z najwiekszym wynikiem to :\n")
 network_scores[network_scores$Score == max(network_scores$Score),]
 
+# i am choosing hc_network
+
+#### Estimating parameters ####
+
+estimation <- bn.fit(hc_network, fetal_health_grouped)
+
+#barcharts
+bn.fit.barchart(estimation$baseline_value_group)
+
+bn.fit.barchart(estimation$fetal_movement_group)
+bn.fit.barchart(estimation$uterine_contractions_group)
+bn.fit.barchart(estimation$abnormal_short_term_variability_group)
+bn.fit.barchart(estimation$mean_value_of_short_term_variability_group)
+bn.fit.barchart(estimation$percentage_of_time_with_abnormal_long_term_variability_group)
+bn.fit.barchart(estimation$mean_value_of_long_term_variability_group)
+bn.fit.barchart(estimation$histogram_width_group)
+bn.fit.barchart(estimation$histogram_min_group)
+bn.fit.barchart(estimation$histogram_max_group)
+bn.fit.barchart(estimation$histogram_mean_group)
+bn.fit.barchart(estimation$fetal_health)
+
+#### Examples of probability ####
+
+#prob 1
+library(gRain)
+grain <- compile(as.grain(estimation))
+
+prob1 <- setEvidence(grain,
+                     nodes = c("baseline_value_group"),
+                     states = c("(130,139]"))
+result_prob1 <- querygrain(prob1, nodes = c("fetal_health"))$fetal_health
+result_prob1 
+
+#prob 2
+
+
+prob2 <- setEvidence(grain,
+                     nodes = c("histogram_width_group"),
+                     states = c("(100,131]"))
+result_prob2 <- querygrain(prob2, nodes = c("mean_value_of_short_term_variability_group"))$mean_value_of_short_term_variability_group
+result_prob2
+
+# prob 3
+
+prob3 <- setEvidence(grain,
+                     nodes = c("fetal_movement_group"),
+                     states = c("[-1,0.0962]"))
+result_prob3 <- querygrain(prob3, nodes = c("histogram_width_group"))$histogram_width_group
+result_prob3
+
